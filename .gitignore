@@ -1,0 +1,19 @@
+# ── Source PDF (too large for git) ───────────────────────────────────────────
+*.pdf
+
+# ── Sarvam OCR working directory (generated, large) ──────────────────────────
+sarvam_output/
+
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+
+# ── OS / editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
