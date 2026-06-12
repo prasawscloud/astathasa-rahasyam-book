@@ -6,7 +6,7 @@ import re, html as htmllib, os, sys
 
 import os as _os
 _ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
-SRC = _os.path.join(_ROOT, "sarvam_output", "astathasa_rahasyam_formatted.md")
+SRC = _os.path.join(_ROOT, "sarvam_output", "astathasa_rahasyam_formatted_v2.md")
 OUT = _os.path.join(_ROOT, "docs", "index.html")
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -273,10 +273,9 @@ while i < N:
                    '</ul>')
         continue
 
-    # ── Index entries (dot form): "N. text ..." possibly multi-crammed ──────
-    if IDX_DOT.match(s):
+    # ── Index entries (dot form): only inside known index sections ──────────
+    if _in_index[0] and IDX_DOT.match(s):
         if MULTI_IDX.search(s):
-            # Split crammed entries: "2. x  3. y  4. z"
             entries = split_crammed_index(s)
         else:
             entries = [s]
@@ -307,7 +306,7 @@ while i < N:
             continue
 
     # ── Index entries (no-dot form): "N text pages" ─────────────────────────
-    if is_index_nodot(s):
+    if _in_index[0] and is_index_nodot(s):
         # Collect consecutive no-dot index lines
         rows = []
         cur = s
@@ -360,8 +359,8 @@ while i < N:
                 or nx.startswith(':::')
                 or re.match(r'^[-*]\s', nx)
                 or re.match(r'^\*\*\d', nx)
-                or IDX_DOT.match(nx)
-                or is_index_nodot(nx)):
+                or (_in_index[0] and IDX_DOT.match(nx))
+                or (_in_index[0] and is_index_nodot(nx))):
             break
         para.append(nx)
         i += 1
