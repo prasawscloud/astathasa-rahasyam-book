@@ -61,12 +61,13 @@ text = '\n'.join(lines)
 # We only remove mid-line numbers where the preceding context ends mid-word.
 
 def remove_inline_numbers(text):
-    # Remove inline OCR page-line numbers that appear mid-sentence.
-    # These appear after Tamil chars, punctuation (. , ; : " "), or closing parens.
-    # Pattern: (non-newline context char) optional-space N. space Tamil-char
-    # Do NOT remove when preceded by newline (start of line = real sutra number).
+    # Remove inline OCR page-line numbers embedded mid-sentence.
+    # Safe rule: remove N. only when preceded by a Tamil vowel-marker or Tamil char
+    # (i.e. mid-word context), NOT after sentence-ending punctuation like `.` `||` `:`.
+    # This preserves "sentence. 18. next sentence" (real sutra) but removes
+    # "word 25. continuation" (OCR page-line leak inside a sentence).
     pattern = re.compile(
-        r'([஀-௿ா-்\)\"\.\,\;\:\"\'"])\s{0,3}\d{1,3}\.\s+(?=[஀-௿\"])'
+        r'([஀-௿ா-்ா-்])\s{0,2}\d{1,3}\.\s+(?=[஀-௿])'
     )
     return pattern.sub(r'\1 ', text)
 
@@ -112,9 +113,10 @@ lines = cleaned
 text = '\n'.join(lines)
 text = re.sub(r'\n{3,}', '\n\n', text)
 
-# ── Pass 6: Fix lines where a sentence continues after a mid-word break ───────
-# Lines that end with a Tamil char (no punctuation) and next line starts mid-word
-# (lowercase Tamil continuation — no heading marker)
+# ── Pass 6: Join only OCR hyphen line-breaks (NOT general mid-word joins) ─────
+# Only join lines where OCR inserted a hyphen mid-word at line end.
+# Pattern: line ends with "Tamil-char-" and next line starts with Tamil.
+# We do NOT join general Tamil line endings — those may be verse lines.
 lines = text.split('\n')
 result = []
 i = 0
@@ -122,36 +124,12 @@ while i < len(lines):
     line = lines[i]
     s = line.rstrip()
 
-    # Skip headings, blank, HR, fences
-    if (not s or s.startswith('#') or s.startswith('---')
-            or s.startswith(':::') or s.startswith('>')
-            or s.startswith('**') or s.startswith('- ')
-            or s.startswith('*') or s.startswith('!')):
-        result.append(line)
-        i += 1
-        continue
-
-    # Check if line ends mid-word (Tamil char, no sentence-end punctuation)
-    last = s[-1] if s else ''
-    hyphen_join = last == '-' and len(s) > 10
-    ends_mid = ((TAMIL.search(last) or last in ')') and not SENTENCE_END.search(s)) or hyphen_join
-    # Don't join very short lines (labels/headings)
-    if len(s) < 20:
-        ends_mid = False
-
-    if ends_mid and i + 1 < len(lines):
-        nxt = lines[i + 1].strip()
-        # Join if next line starts with Tamil/quote and isn't a heading/sutra/blank/fence
-        if (nxt and (TAMIL.search(nxt[0]) or nxt[0] in '"\'|')
-                and not nxt.startswith('#')
-                and not nxt.startswith('---')
-                and not nxt.startswith(':::')
-                and not re.match(r'^\d{1,3}\.', nxt)):
-            if hyphen_join:
-                # Remove the trailing hyphen before joining (OCR line-wrap hyphen)
-                result.append(s[:-1] + nxt)
-            else:
-                result.append(s + ' ' + nxt)
+    # Only act on lines ending with hyphen after a Tamil char
+    if (len(s) > 5 and s[-1] == '-' and TAMIL.search(s[-2])
+            and not s.startswith('#') and not s.startswith('---')):
+        nxt = lines[i + 1].strip() if i + 1 < len(lines) else ''
+        if nxt and TAMIL.search(nxt[0]):
+            result.append(s[:-1] + nxt)
             i += 2
             continue
 
@@ -160,7 +138,7 @@ while i < len(lines):
 
 text = '\n'.join(result)
 
-# ── Final: collapse blanks again after joins ──────────────────────────────────
+# ── Final: collapse blanks again ──────────────────────────────────────────────
 text = re.sub(r'\n{3,}', '\n\n', text)
 
 with open(OUT, 'w', encoding='utf-8') as f:
