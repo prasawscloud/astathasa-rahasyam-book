@@ -114,17 +114,17 @@ def _render_toc_row(num, title_html, pg_str, indent=False):
             f'<span class="toc-pg-cell">{pg}</span>'
             f'</div>')
 
-# Pattern: "**N.** Title — பக்கம் X—Y"
+# Pattern: "**N.** Title — பக்கம் X—Y"  OR  "**N.** Title: X-Y"
 _TOC_BOLD = re.compile(
-    r'^\*\*(\d{1,2})\.\*\*\s+(.+?)\s+[—\-–]+\s*பக்கம்\s+(.+)$'
+    r'^\*\*(\d{1,2})\.\*\*\s+(.+?)\s*(?:[—\-–]+\s*பக்கம்\s*|:)\s*(.+)$'
 )
 # Pattern: "N Title X-Y"  (Format B, plain, used after second --- in TOC)
 _TOC_PLAIN = re.compile(
     r'^(\d{1,2})\s+([^\d].+?)\s+([\d][\d\s\-—–]+[\d]|[\d]+)\s*$'
 )
-# Sub-item: "(i) text page-range"  or  "(ii) text page-range"
+# Sub-item: "- (i) text: page-range"  or  "(i) text page-range"
 _TOC_SUB = re.compile(
-    r'^\(([ivxlIVXL]+|\w)\)\s+(.+?)\s+([\d][\d\s\-—–]+[\d]|[\d]+)\s*$'
+    r'^[-\s]*\(([ivxlIVXL]+)\)\s+(.+?):?\s+([\d][\d\s\-—–]+[\d]|[\d]+)\s*$'
 )
 
 _in_toc = [False]        # track whether we're inside the TOC section
@@ -252,8 +252,16 @@ while i < N:
             out.append('<div class="img-ornament">✦</div>')
         continue
 
-    # Bullet list (- or *)
+    # Bullet list (- or *) — but check for TOC sub-items first
     if re.match(r'^[-*]\s', s):
+        # If in TOC context and line is a sub-item like "- (i) text: pages", render as toc-sub
+        if _in_toc[0]:
+            stripped = re.sub(r'^[-*]\s+', '', s)
+            m_sub = _TOC_SUB.match(stripped)
+            if m_sub:
+                label = f'({m_sub.group(1)}) {xref_body(inline(m_sub.group(2)))}'
+                out.append(_render_toc_row('', label, m_sub.group(3), indent=True))
+                continue
         items = []
         j = i - 1
         while j < N and re.match(r'^[-*]\s', lines[j].strip()):
