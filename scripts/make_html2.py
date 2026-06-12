@@ -187,6 +187,20 @@ while i < N:
         out.append('<div class="divider"><span>❧ ॐ ❧</span></div>')
         continue
 
+    # ::: fences — card box or centered block
+    if s == ':::card':
+        out.append('<div class="cover-card">')
+        continue
+    if s == ':::center':
+        out.append('<div class="text-center">')
+        continue
+    if s == ':::highlight':
+        out.append('<div class="highlight-block">')
+        continue
+    if s == ':::':
+        out.append('</div>')
+        continue
+
     # Heading — also resets toc context
 
 
@@ -330,26 +344,19 @@ while i < N:
         continue
 
     # Regular paragraph — collect continuation lines
-    # Cover-meta lines: "**Label:** value" — each on its own line in the cover card
-    if _after_cover[0] and re.match(r'^\*\*[^*]+:\*\*', s):
-        out.append(f'<div class="book-meta-line">{xref_body(inline(s))}</div>')
-        continue
-
-    # Stop if next line looks like an index entry, numbered sutra, or bold-numbered entry
     para = [s]
     while i < N:
         nx = lines[i].strip()
         if (not nx or nx.startswith('#') or re.match(r'^-{3,}$', nx)
                 or nx.startswith('>') or nx.startswith('![')
+                or nx.startswith(':::')
                 or re.match(r'^[-*]\s', nx)
                 or re.match(r'^\*\*\d', nx)
-                or (re.match(r'^\*\*[^*]+:\*\*', nx) and _after_cover[0])
                 or IDX_DOT.match(nx)
                 or is_index_nodot(nx)):
             break
         para.append(nx)
         i += 1
-    _after_cover[0] = False
     out.append(f'<p>{xref_body(inline(" ".join(para)))}</p>')
 
 body_html = '\n'.join(out)
@@ -382,33 +389,6 @@ for lvl, txt, sid in toc:
     toc_items.append(f'<li class="{cls}"><a href="#{sid}" data-id="{sid}">{esc(txt)}</a></li>')
 toc_html = '\n'.join(toc_items)
 
-# ── Wrap h1.book-title + consecutive book-meta-line divs into one cover-card ──
-body_html = re.sub(
-    r'(<h1[^>]*class="book-title"[^>]*>.*?</h1>)\n((?:<div class="book-meta-line">[^\n]*</div>\n?)+)',
-    r'<div class="cover-card">\1\2</div>',
-    body_html
-)
-
-# ── Wrap ஆசார்யாக்ரேஸரரான block (heading + paras until first divider) into cover-card ──
-body_html = re.sub(
-    r'(<h[2-4][^>]*id="ஆசார்யாக்ரேஸரரான"[^>]*>.*?</h[2-4]>\n(?:(?:<h[2-4][^>]*>.*?</h[2-4]>|<p>.*?</p>)\n?)+?)(<div class="divider">)',
-    r'<div class="cover-card">\1</div>\n\2',
-    body_html, flags=re.DOTALL
-)
-
-# ── Wrap அச்சிட்டோர் (printer) paragraph into its own cover-card ──────────────
-body_html = re.sub(
-    r'(<p>அச்சிட்டோர்[^<]*</p>)',
-    r'<div class="cover-card">\1</div>',
-    body_html
-)
-
-# ── Mark auspicious occasion sentence with special styling ────────────────────
-body_html = re.sub(
-    r'(மதுரைப் பேராசிரியர் முனைவர்[^<]*நவத்யப்தபூர்த்தியை[^<]*வெளியிடப்படுகிறது\.)',
-    r'<span class="auspicious">\1</span>',
-    body_html
-)
 
 # ── Full HTML ──────────────────────────────────────────────────────────────────
 HTML = f"""<!DOCTYPE html>
@@ -560,19 +540,27 @@ div.book-meta-line{{
 }}
 div.book-meta-line strong{{color:var(--acc2);margin-right:.3em}}
 /* Auspicious occasion sentence */
-span.auspicious{{
-  display:block;
+/* Centered block */
+.text-center,.text-center p,.text-center h1,.text-center h2,.text-center h3,.text-center h4{{
+  text-align:center;
+}}
+/* Highlight block — auspicious / special occasion text */
+.highlight-block{{
+  background:linear-gradient(135deg,rgba(180,120,40,.14) 0%,rgba(180,120,40,.05) 100%);
+  border:2px solid var(--acc);
+  border-radius:10px;
+  padding:1rem 1.4rem;
+  margin:1.2em 0;
+  text-align:center;
+  box-shadow:0 2px 12px rgba(180,120,40,.15);
+}}
+.highlight-block p{{
   font-family:'Noto Serif Tamil',Georgia,serif;
   font-size:1.05rem;
   font-weight:600;
   color:var(--acc);
-  background:linear-gradient(135deg,rgba(180,120,40,.13) 0%,rgba(180,120,40,.05) 100%);
-  border-left:3px solid var(--acc);
-  border-radius:0 6px 6px 0;
-  padding:.55em .9em .55em .8em;
-  margin:.6em 0;
-  line-height:1.7;
-  letter-spacing:.01em;
+  line-height:1.8;
+  margin:0;
 }}
 
 /* ── Colophon card — publication dedication block ─── */
