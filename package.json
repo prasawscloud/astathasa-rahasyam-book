@@ -1,0 +1,10 @@
+{
+  "name": "astathasa-rahasyam-reader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "extract": "node scripts/extract-book.js \"/Users/adhityaram/Downloads/Astathasa Rahasyam Book.pdf\"",
+    "serve": "node scripts/serve.js"
+  }
+}

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ta">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>அஷ்டாதச ரஹஸ்யம் Reader</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar" aria-label="Search and index">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">அ</span>
+          <div>
+            <h1>அஷ்டாதச ரஹஸ்யம்</h1>
+            <p id="bookMeta">Loading digitized book...</p>
+          </div>
+        </div>
+
+        <label class="search-box" for="searchInput">
+          <span aria-hidden="true">⌕</span>
+          <input id="searchInput" type="search" autocomplete="off" placeholder="Search Tamil or English text">
+        </label>
+
+        <div class="segmented" role="tablist" aria-label="Sidebar view">
+          <button id="resultsTab" class="is-active" type="button" role="tab" aria-selected="true">Results</button>
+          <button id="indexTab" type="button" role="tab" aria-selected="false">Index</button>
+        </div>
+
+        <div class="sidebar-status" id="searchStatus">Preparing index...</div>
+        <div class="list-panel" id="resultsList" aria-live="polite"></div>
+      </aside>
+
+      <section class="reader">
+        <header class="reader-toolbar">
+          <div class="page-controls">
+            <button class="icon-button" id="prevPage" type="button" title="Previous page" aria-label="Previous page">‹</button>
+            <label class="page-jump" for="pageInput">
+              <span>Page</span>
+              <input id="pageInput" type="number" min="1" value="1">
+              <span id="pageTotal">/ 0</span>
+            </label>
+            <button class="icon-button" id="nextPage" type="button" title="Next page" aria-label="Next page">›</button>
+          </div>
+
+          <div class="toolbar-actions">
+            <div class="segmented compact" aria-label="Reader view">
+              <button id="splitView" class="is-active" type="button">Split</button>
+              <button id="imageView" type="button">Original</button>
+              <button id="textView" type="button">Text</button>
+            </div>
+            <button class="icon-button" id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out">−</button>
+            <span class="zoom-label" id="zoomLabel">100%</span>
+            <button class="icon-button" id="zoomIn" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+            <button class="text-button" id="copyText" type="button">Copy OCR</button>
+          </div>
+        </header>
+
+        <div class="reader-title">
+          <p id="pageKicker">Page 1</p>
+          <h2 id="pageTitle">Loading...</h2>
+        </div>
+
+        <div class="content-grid split" id="contentGrid">
+          <figure class="page-scan">
+            <img id="pageImage" alt="Scanned page">
+          </figure>
+          <article class="ocr-pane" aria-label="OCR text">
+            <pre id="ocrText"></pre>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
