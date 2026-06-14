@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>அஷ்டாதச ரஹஸ்யம் · Ashtadasa Rahasyam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Serif+Tamil:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-theme="light" data-font="serif">
+
+  <!-- Top bar -->
+  <header class="topbar" id="topbar">
+    <div class="tb-inner">
+      <button class="icon-btn" id="tocBtn" title="உள்ளடக்கம் (Contents)" aria-label="Contents">
+        <svg viewBox="0 0 24 24" class="ic"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg>
+      </button>
+      <button class="brand" id="brandBtn" title="Cover">
+        <span class="brand-ta">அஷ்டாதச ரஹஸ்யம்</span>
+        <span class="brand-en">Ashtadasa Rahasyam</span>
+      </button>
+      <div class="tb-right">
+        <button class="icon-btn" id="searchBtn" title="தேடுக (Search · /)" aria-label="Search">
+          <svg viewBox="0 0 24 24" class="ic"><path d="M10.5 3a7.5 7.5 0 015.93 12.12l4.22 4.22-1.41 1.41-4.22-4.22A7.5 7.5 0 1110.5 3zm0 2a5.5 5.5 0 100 11 5.5 5.5 0 000-11z"/></svg>
+        </button>
+        <button class="icon-btn" id="aaBtn" title="எழுத்துரு (Display)" aria-label="Display options">
+          <svg viewBox="0 0 24 24" class="ic"><path d="M5 19l5.5-14h3L19 19h-2.2l-1.4-4H8.6l-1.4 4H5zm4.3-6h5.4L12 6.9 9.3 13z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <!-- Reading surface -->
+  <main class="reader" id="reader">
+    <article class="book" id="book"></article>
+  </main>
+
+  <!-- Bottom status -->
+  <footer class="statusbar" id="statusbar">
+    <span class="status-chapter" id="statusChapter"></span>
+    <span class="status-page" id="statusPage"></span>
+  </footer>
+
+  <!-- TOC drawer -->
+  <aside class="drawer" id="tocDrawer" hidden>
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h2>உள்ளடக்கம்</h2>
+        <button class="icon-btn" id="tocClose" aria-label="Close"><svg viewBox="0 0 24 24" class="ic"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"/></svg></button>
+      </div>
+      <nav class="toc-list" id="tocList"></nav>
+      <div class="drawer-foot">
+        <a class="epub-link" id="epubLink" href="Ashtadasa-Rahasyam.epub" download>
+          <svg viewBox="0 0 24 24" class="ic"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4l-4.7-4.7 1.4-1.4L12 13.6V3zM5 19h14v2H5z"/></svg>
+          <span><b>EPUB பதிவிறக்கம்</b><small>Download e-book (Apple Books · Kindle)</small></span>
+        </a>
+      </div>
+    </div>
+    <div class="drawer-scrim" id="tocScrim"></div>
+  </aside>
+
+  <!-- Display (Aa) popover -->
+  <div class="aa-pop" id="aaPop" hidden>
+    <div class="aa-row aa-themes">
+      <button class="theme-chip" data-theme="light" title="Light">Aa</button>
+      <button class="theme-chip" data-theme="sepia" title="Sepia">Aa</button>
+      <button class="theme-chip" data-theme="night" title="Night">Aa</button>
+    </div>
+    <div class="aa-row">
+      <button class="aa-btn" id="fontDown">A−</button>
+      <span class="aa-label" id="fontLabel">100%</span>
+      <button class="aa-btn" id="fontUp">A＋</button>
+    </div>
+    <div class="aa-row aa-fonts">
+      <button class="font-chip" data-font="serif">அ Serif</button>
+      <button class="font-chip" data-font="sans">அ Sans</button>
+    </div>
+    <div class="aa-row aa-width">
+      <button class="width-chip" data-width="narrow">▮ Narrow</button>
+      <button class="width-chip" data-width="normal">▮▮ Normal</button>
+      <button class="width-chip" data-width="wide">▮▮▮ Wide</button>
+    </div>
+  </div>
+
+  <!-- Scan lightbox -->
+  <div class="scan-modal" id="scanModal" hidden>
+    <div class="scan-top">
+      <span id="scanLabel"></span>
+      <button class="icon-btn" id="scanClose" aria-label="Close"><svg viewBox="0 0 24 24" class="ic"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"/></svg></button>
+    </div>
+    <div class="scan-body" id="scanBody"><img id="scanImg" alt="Original scanned page" /></div>
+  </div>
+
+  <!-- Search overlay -->
+  <div class="search-overlay" id="searchOverlay" hidden>
+    <div class="search-panel" role="dialog" aria-modal="true">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" class="ic"><path d="M10.5 3a7.5 7.5 0 015.93 12.12l4.22 4.22-1.41 1.41-4.22-4.22A7.5 7.5 0 1110.5 3zm0 2a5.5 5.5 0 100 11 5.5 5.5 0 000-11z"/></svg>
+        <input class="search-input" id="searchInput" type="text" placeholder="நூலில் தேடுக…  (Search the full text)" autocomplete="off" />
+        <span class="search-count" id="searchCount"></span>
+        <button class="icon-btn" id="searchClose" aria-label="Close"><svg viewBox="0 0 24 24" class="ic"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"/></svg></button>
+      </div>
+      <div class="search-results" id="searchResults">
+        <div class="search-hint" id="searchHint">
+          <p>முழு நூலின் உரையிலும் தேடலாம்.</p>
+          <p class="muted">Search across all 652 pages. Tap a result to jump there.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="boot" id="boot"><div class="boot-spin"></div><p>நூல் ஏற்றப்படுகிறது…</p></div>
+
+  <script src="data/book.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
