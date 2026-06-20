@@ -6,8 +6,8 @@ import re, html as htmllib, os, sys
 
 import os as _os
 _ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
-SRC = _os.path.join(_ROOT, "sarvam_output", "astathasa_rahasyam_formatted.md")
-OUT = _os.path.join(_ROOT, "docs", "index.html")
+SRC = _os.path.join(_ROOT, "sarvam_output", "astathasa_rahasyam_formatted_v4.md")
+OUT = _os.path.join(_ROOT, "docs", "index_v4.html")
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -359,6 +359,7 @@ while i < N:
                 or nx.startswith(':::')
                 or re.match(r'^[-*]\s', nx)
                 or re.match(r'^\*\*\d', nx)
+                or re.match(r'^\d{1,3}[\.\s]\s*\S', nx)   # new sutra/numbered line
                 or (_in_index[0] and IDX_DOT.match(nx))
                 or (_in_index[0] and is_index_nodot(nx))):
             break
