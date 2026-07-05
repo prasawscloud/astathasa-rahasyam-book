@@ -40,6 +40,18 @@ An index entry whose entire content is a bare ditto mark (e.g. "165. ,,") SHALL 
 - **WHEN** the index entry originally reading "165. ,," is rendered
 - **THEN** it SHALL display the same name/content as row "164." instead of a bare comma
 
+### Requirement: Running page-header artifacts are reduced to a plain page marker
+Where a numbered "sutra"-style paragraph's entire content is a running page-header artifact (the printed book's own title, OCR-garbled) rather than a real citation or doctrinal point, it SHALL be replaced with a plain page-number marker instead of being left to display as a fake numbered entry.
+
+#### Scenario: Page-header noise is not mistaken for content
+- **WHEN** a `<span class="sutra-num">N.</span>` paragraph's only content matches the pattern of the book's own (variously OCR-garbled) title — e.g. "அஷ்டாத௨ ரஹஸ்யம்", "அஷ்டாத, v0 ரஹஸ்யம்" — with nothing else in that paragraph
+- **THEN** it SHALL be replaced with `<p class="appendix-marker">பக்கம் N</p>`, dropping the garbled title text
+- **AND** this SHALL apply book-wide (not only within the citation-compilation appendix), since the artifact recurs throughout the main commentary too
+
+#### Scenario: Genuine short sutra points are not touched
+- **WHEN** a `<span class="sutra-num">` paragraph is short but is a genuine terse doctrinal point (e.g. "ஏகம்.", "பரித்யஜ்ய.")
+- **THEN** it SHALL NOT be altered — only paragraphs matching the book-title artifact pattern are affected
+
 ### Requirement: No authorial or scriptural content is altered
 Every content-cleanup action SHALL be scoped to the specific identified artifacts (the placeholder string, the one mistemplated errata row, the one ditto mark) — no other text in the book SHALL be reworded, reordered, or removed as a side effect.
 
