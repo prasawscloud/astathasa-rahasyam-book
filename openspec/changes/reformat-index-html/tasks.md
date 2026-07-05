@@ -40,3 +40,10 @@
 - [x] 5.1 Run full regression: search feature works unmodified in `docs/index_v1.html` — **note**: the transliteration/Sarvam-AI search enhancement from earlier this session is no longer present in `docs/index.html` (working tree matches `git diff HEAD` exactly, i.e. reverted to last commit — outside this change's scope); verified the base search (literal Tamil query → 1/138 matches) and index-page click-through (→ 1/1 match, fresh load) both work correctly in `docs/index_v1.html`
 - [x] 5.2 Screenshotted: chapter heading style restored (light/sepia/dark), justify-fix, citation/translation formatting, page-ref badges, mobile width — all confirmed correct
 - [x] 5.3 Confirmed `docs/index.html` untouched: `git diff --stat docs/index.html` is empty; `git status` shows only `docs/index_v1.html`, `openspec/`, `.claude/` as new/untracked
+
+## 6. Post-promotion refinements (after user renamed index_v1.html to index.html)
+
+- [x] 6.1 Redesigned citation-appendix borders: verse+translation now share one continuous left-border/background per numbered entry (was: border only on the translation, looking disconnected) — verified pixel-continuity at entry seams, and clean breaks before each new numbered entry, in light/sepia/dark themes
+- [x] 6.2 Fixed a regression from the earlier `<style>`-block reconstruction: it had pulled `text-align:justify;hyphens:auto` back in from the reverted baseline, silently undoing the earlier justify fix, plus corrupted the `.cite-trans`/`.pg-ref` margin and padding shorthands — all restored
+- [x] 6.3 Fixed 68 running page-header artifacts (page number + OCR-garbled repetition of the book's own title, e.g. "அஷ்டாத௨ ரஹஸ்யம்") disguised as fake numbered citation entries, found throughout the whole book (27 in the appendix, 41 in the main commentary) — replaced with plain `பக்கம் N` page markers; verified no other genuine short sutra points were affected and no unintended text changes via word-level diff
+- [x] 6.4 Committed and pushed to `feature/openspec` on GitHub (`.claude/settings.local.json` excluded, no secrets in the pushed commit — verified before push)
